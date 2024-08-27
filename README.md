@@ -4,5 +4,5 @@ What most people don't know is that I'm also a **Data Scientist** with a love fo
 I started Record Store with the intention of introducing people to new music. I can only write so much every week, and the writing is only a conduit for someone trying to hear more of what they like from me. With turntable, you can get recommendations from my personal library.
 
 ## Here's how it works:
-It's pretty simple right now: input a playlist of mine you like. You can find those [here](https://open.spotify.com/user/nightrainlily?si=d3aa5399dddf4b1e).
+It's pretty simple right now: run the ml.ipynb notebook. input a playlist of mine you like. You can find those [here](https://open.spotify.com/user/nightrainlily?si=d3aa5399dddf4b1e).
 The code will spit out a similar playlist for you to try.
