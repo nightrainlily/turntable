@@ -1,0 +1,67 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f8f8f8;
+}
+
+.playlists-container{
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    max-width: 80%;
+    width: 100%;
+    padding: 20px;
+}
+
+.playlist {
+    text-align: center;
+    overflow: hidden;
+}
+
+.playlist img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1; /* Keeps images square */
+    border-radius: 2px;
+    object-fit: cover; /* Ensures image covers the square area */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.playlist p {
+    margin-top: 10px;
+    font-size: 1em;
+    color: #333;
+}
+
+.playlist-page {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+}
+
+.playlist-page-div {
+    flex: 1;
+    width: 50%;
+}
+
+.playlist-page-image img{
+    margin: auto;
+    display: block;
+    width: 50%;
+    height: 50%
+}
+
+.playlist-page-image p {
+    text-align: center;
+    margin-top: 10px;
+}

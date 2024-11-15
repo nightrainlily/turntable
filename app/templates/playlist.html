@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>{{ playlist.name }}</title>
+{% endblock %}
+
+{% block body %}
+<div class="playlist-page">
+    <div class="playlist-page-div">
+        <div class="playlist-page-image">
+            <img src="{{ playlist.image }}" alt="playlist.name">
+            <p><a href="{{ playlist.url }}" target="_blank">{{ playlist.name }}</a></p>
+        </div>
+    </div>
+    <div class="playlist-page-div">
+        <div class="playlist-tracks">
+            {% for track in playlist_tracks %}
+                <div class="track-row">
+                    <p><a href="https://open.spotify.com/track/{{ track.track_id }}" target="_blank">{{ track.name }}</a> by {{ track.artist }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
