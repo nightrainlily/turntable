@@ -17,6 +17,7 @@
             {% for track in playlist_tracks %}
                 <div class="track-row">
                     <p><a href="https://open.spotify.com/track/{{ track.track_id }}" target="_blank">{{ track.name }}</a> by {{ track.artist }}</p>
+                    <a href="{{ url_for('artist_playlists', artist_id=track.artist_id) }}">more playlists</a>
                 </div>
             {% endfor %}
         </div>

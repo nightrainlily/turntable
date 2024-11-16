@@ -1,7 +1,7 @@
 from flask import Flask, session, redirect, request, url_for, render_template
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.ext.mutable import MutableList
-from sqlalchemy import desc, cast
+from sqlalchemy import desc, cast, func
 import requests
 import os
 from dotenv import load_dotenv
@@ -109,6 +109,22 @@ def playlist_details(playlist_id):
     playlist = Playlist.query.filter_by(playlist_id=playlist_id).first_or_404()
     playlist_tracks = Track.query.filter_by(playlist_id=playlist_id).all()
     return render_template('playlist.html', playlist=playlist, playlist_tracks=playlist_tracks)
+
+@app.route('/artist/<string:artist_id>')
+def artist_playlists(artist_id):
+    artist_name = db.session.query(Artist.name).filter_by(artist_id=artist_id).first().name
+    tracks = db.session.query(Track).filter_by(artist_id=artist_id).all()
+    artist_playlists = []
+    for track in tracks:
+        playlists = Playlist.query.filter_by(playlist_id=track.playlist_id).all()
+        artist_playlists.append(playlists)
+    sorted_playlists = sorted(
+        artist_playlists,
+        key=lambda p: int(p[0].name.split(' ')[0]) if p[0].name.split(' ')[0].isdigit() else 0,
+        reverse=True
+    )
+    print(sorted_playlists)
+    return render_template('artist.html', artist_playlists=sorted_playlists, artist_name=artist_name)
 
 @app.route('/authorize')
 def authorize():

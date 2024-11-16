@@ -4,21 +4,34 @@
     box-sizing: border-box;
 }
 
+header {
+    display: flex;
+    justify-content: center; /* Centers the content horizontally */
+    align-items: center; /* Centers the content vertically */
+    height: 100px; /* Adjust height as needed */
+    background-color: #f8f9fa; /* Light gray background */
+}
+.logo {
+    width: 150px; 
+    height: auto;
+}
+
 body {
     font-family: Arial, sans-serif;
-    display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
     background-color: #f8f8f8;
+    position: relative;
 }
 
 .playlists-container{
     display: grid;
     gap: 20px;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    max-width: 80%;
-    width: 100%;
+    margin-left: 10%;
+    margin-right: 10%;
+    max-width: 100%;
     padding: 20px;
 }
 
@@ -44,9 +57,13 @@ body {
 
 .playlist-page {
     display: flex;
+    justify-content: center;
     flex-direction: row;
     align-items: center;
     width: 100%;
+    position: absolute;
+    top: 50%;
+    bottom: 50%
 }
 
 .playlist-page-div {
@@ -64,4 +81,21 @@ body {
 .playlist-page-image p {
     text-align: center;
     margin-top: 10px;
+}
+
+.playlist-tracks {
+    margin: 10%
+}
+
+.track-row {
+    display: flex;
+    justify-content: space-between;
+    margin: 1%
+}
+
+.artist-header {
+    min-width: 100%;
+    text-align: center;
+    margin-top: 5%;
+    margin-bottom: 1%;
 }
