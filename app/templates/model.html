@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>{{ playlist_name }}</title>
+{% endblock %}
+
+{% block body %}
+<div class="title-header">
+    <h2>{{ playlist_name }}</h2>
+</div>
+<div class="playlists-container">
+    {% for playlist in model_playlists %}
+        <div class="playlist">
+            <a href="{{ url_for('playlist_details', playlist_id=playlist.playlist_id) }}">
+                <img src="{{ playlist.image }}" alt="{{ playlist.name }}">
+            </a>
+            <p>{{ playlist.name }}</p>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

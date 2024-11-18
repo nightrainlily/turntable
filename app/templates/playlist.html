@@ -10,6 +10,7 @@
         <div class="playlist-page-image">
             <img src="{{ playlist.image }}" alt="playlist.name">
             <p><a href="{{ playlist.url }}" target="_blank">{{ playlist.name }}</a></p>
+            <p><a href="{{ url_for('model_playlists', playlist_id=playlist.playlist_id) }}">turntable</a></p>
         </div>
     </div>
     <div class="playlist-page-div">

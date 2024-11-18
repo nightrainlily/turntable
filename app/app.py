@@ -1,6 +1,6 @@
 from flask import Flask, session, redirect, request, url_for, render_template
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.ext.mutable import MutableList
+from sqlalchemy.sql.sqltypes import ARRAY
 from sqlalchemy import desc, cast, func
 import requests
 import os
@@ -9,6 +9,7 @@ from urllib.parse import urlencode, quote
 from apscheduler.schedulers.background import BackgroundScheduler
 import re
 import time
+import model
 
 load_dotenv()
 
@@ -64,7 +65,7 @@ class Artist(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     artist_id = db.Column(db.String(50), unique=True, nullable=False)
     name = db.Column(db.String, nullable=False)
-    genres = db.Column(MutableList.as_mutable(db.PickleType), default=[])
+    genres = db.Column(db.String, default='')
 
     artist_tracks = db.relationship('Track', backref='track')
 
@@ -123,8 +124,18 @@ def artist_playlists(artist_id):
         key=lambda p: int(p[0].name.split(' ')[0]) if p[0].name.split(' ')[0].isdigit() else 0,
         reverse=True
     )
-    print(sorted_playlists)
     return render_template('artist.html', artist_playlists=sorted_playlists, artist_name=artist_name)
+
+@app.route('/recommendations/<string:playlist_id>')
+def model_playlists(playlist_id):
+    recs = model.get_recs(playlist_id=playlist_id)
+    model_playlists=[]
+    for playlist_name in recs:
+        playlist = Playlist.query.filter_by(name=playlist_name).first()
+        model_playlists.append(playlist)
+    sorted_playlists = sorted(model_playlists, key=lambda p: int(p.name.split()[0]), reverse=True)
+
+    return render_template('model.html', model_playlists=sorted_playlists, playlist_name=db.session.query(Playlist.name).filter(Playlist.playlist_id == playlist_id).scalar())
 
 @app.route('/authorize')
 def authorize():
@@ -215,6 +226,7 @@ def get_playlists(num_playlists, limit=50):
             time.sleep(1)
         playlists_data = [playlist for result in results for playlist in result]
 
+        new_playlist_count=0
         for playlist in playlists_data:
             reg = "^([0-9])+\s([a-z]+(\s?)([a-z]?))"
             zero_reg = "^00"
@@ -235,8 +247,9 @@ def get_playlists(num_playlists, limit=50):
                     )
                     get_tracks(playlist_id)
                     db.session.add(new_playlist)
+                    new_playlist_count+=1
         db.session.commit()
-        return True
+        return new_playlist_count
     return False
 
 def get_tracks(playlist_id):
@@ -254,7 +267,6 @@ def get_tracks(playlist_id):
             track = track_info['track']
             track_id = track['id']
             track_name = track['name']
-            print(track_name)
             artist_name = track['artists'][0]['name']
             artist_id = track['artists'][0]['id']
 
@@ -270,12 +282,13 @@ def get_tracks(playlist_id):
                 print(track_name)
                 get_artists(artist_id)
                 db.session.add(new_track)
-            #add logic for handling tracks which belong to multiple playlists
         db.session.commit()
     return
 
-def get_audio_features():
-    track_ids = db.session.query(Track.track_id).all()
+
+def get_audio_features(num_tracks):
+    track_ids = db.session.query(Track.track_id).limit(-num_tracks).all()
+    print(track_ids)
     access_token = refresh_access_token()
     if access_token:
         headers = {
@@ -308,7 +321,6 @@ def get_audio_features():
         db.session.commit()
     return
 
-
 def get_artists(artist_id):
     access_token = refresh_access_token()
     if access_token:
@@ -325,7 +337,7 @@ def get_artists(artist_id):
             new_artist = Artist(
                 artist_id=artist_id,
                 name=artist_data['name'],
-                genres=artist_data['genres']
+                genres=", ".join(artist_data['genres'])
             )
             db.session.add(new_artist)
         db.session.commit()
@@ -333,9 +345,10 @@ def get_artists(artist_id):
 
 @app.route('/update')
 def update():
-    playlists = get_playlists(10, 10)
-    print('updated!', playlists)
-    if playlists:
+    num_playlists = get_playlists(10, 10)
+    get_audio_features(num_playlists)
+    print('updated!', num_playlists)
+    if num_playlists:
         return redirect(url_for('index'))
 
 scheduler = BackgroundScheduler()

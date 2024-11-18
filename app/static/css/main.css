@@ -11,13 +11,15 @@ header {
     height: 100px; /* Adjust height as needed */
     background-color: #f8f9fa; /* Light gray background */
 }
+
 .logo {
     width: 150px; 
     height: auto;
+    margin-top: 10px;
 }
 
 body {
-    font-family: Arial, sans-serif;
+    font-family: Helvetica, sans-serif;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
@@ -38,6 +40,10 @@ body {
 .playlist {
     text-align: center;
     overflow: hidden;
+    /* max-width: 60%; */
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .playlist img {
@@ -93,7 +99,7 @@ body {
     margin: 1%
 }
 
-.artist-header {
+.title-header {
     min-width: 100%;
     text-align: center;
     margin-top: 5%;
