@@ -5,23 +5,51 @@
 {% endblock %}
 
 {% block body %}
-<div class="playlist-page">
-    <div class="playlist-page-div">
-        <div class="playlist-page-image">
-            <img src="{{ playlist.image }}" alt="playlist.name">
-            <p><a href="{{ playlist.url }}" target="_blank">{{ playlist.name }}</a></p>
-            <p><a href="{{ url_for('model_playlists', playlist_id=playlist.playlist_id) }}">turntable</a></p>
+<div class="playlist-page-container">
+    <div class="playlist-page">
+        <div class="playlist-page-div">
+            <div class="playlist-page-image">
+                <img src="{{ playlist.image }}" alt="playlist.name" class="playlist-image">
+                <div class="title-row">
+                    <p>
+                        <a href="{{ playlist.url }}" target="_blank">
+                            <img class="play-icon" src="../static/play.png">
+                        </a>
+                        {{ playlist.name }}
+                    </p>
+                </div>
+            </div>
+            
+        </div>
+        <div class="playlist-page-div">
+            <div class="playlist-tracks">
+                {% for track in playlist_tracks %}
+                    <div class="track-row">
+                        <a href="https://open.spotify.com/track/{{ track.track_id }}" target="_blank">
+                            <img class="play-icon" src="../static/play.png">
+                        </a>
+                        <p>{{ track.name }} by 
+                            <a href="{{ url_for('artist_playlists', artist_id=track.artist_id) }}">{{ track.artist }}
+                            </a>
+                        </p>
+                    </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
-    <div class="playlist-page-div">
-        <div class="playlist-tracks">
-            {% for track in playlist_tracks %}
-                <div class="track-row">
-                    <p><a href="https://open.spotify.com/track/{{ track.track_id }}" target="_blank">{{ track.name }}</a> by {{ track.artist }}</p>
-                    <a href="{{ url_for('artist_playlists', artist_id=track.artist_id) }}">more playlists</a>
-                </div>
-            {% endfor %}
-        </div>
+</div>
+<div>
+    
+    <div class="playlist-page-playlists-container">
+        <h2 class="rec-title">more like {{ playlist.name }}</h2>
+        {% for playlist in model_playlists %}
+            <div class="playlist">
+                <a href="{{ url_for('playlist_details', playlist_id=playlist.playlist_id) }}">
+                    <img src="{{ playlist.image }}" alt="{{ playlist.name }}">
+                </a>
+                <p>{{ playlist.name }}</p>
+            </div>
+        {% endfor %}
     </div>
 </div>
 {% endblock %}

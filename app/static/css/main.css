@@ -10,6 +10,7 @@ header {
     align-items: center; /* Centers the content vertically */
     height: 100px; /* Adjust height as needed */
     background-color: #f8f9fa; /* Light gray background */
+    margin-bottom: 10px;
 }
 
 .logo {
@@ -27,6 +28,13 @@ body {
     position: relative;
 }
 
+.playlist-page-container {
+    position:relative;
+    width:100%;
+    margin-top:4em;
+    margin-bottom:2em
+}
+
 .playlists-container{
     display: grid;
     gap: 20px;
@@ -35,6 +43,22 @@ body {
     margin-right: 10%;
     max-width: 100%;
     padding: 20px;
+    position: relative;
+}
+
+.playlist-page-playlists-container{
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    margin-left: 11%;
+    margin-right: 11%;
+    max-width: 100%;
+    padding: 20px;
+    position: absolute;
+}
+
+.playlist-page-playlists-container h2 {
+    position: relative;
 }
 
 .playlist {
@@ -67,21 +91,35 @@ body {
     flex-direction: row;
     align-items: center;
     width: 100%;
-    position: absolute;
+    position: relative;
     top: 50%;
     bottom: 50%
 }
+
+@media only screen and (max-width: 500px) {
+    .playlist-page {
+      flex-direction: column;
+      display: contents;
+    }
+  }
 
 .playlist-page-div {
     flex: 1;
     width: 50%;
 }
 
-.playlist-page-image img{
+@media only screen and (max-width: 500px) {
+    .playlist-page-div {
+      width: 100%;
+      display:block;
+    }
+  }
+
+.playlist-image {
     margin: auto;
     display: block;
-    width: 50%;
-    height: 50%
+    width: 40%;
+    height: 40%
 }
 
 .playlist-page-image p {
@@ -90,13 +128,33 @@ body {
 }
 
 .playlist-tracks {
-    margin: 10%
+    margin: 10%;
+    margin-top: 2.25em
 }
 
 .track-row {
     display: flex;
-    justify-content: space-between;
     margin: 1%
+}
+
+.track-row p{
+    margin-left: 4px
+}
+
+.title-row {
+    display: flex;
+    margin: 1%;
+    justify-content: center;
+}
+
+.title-row p {
+    margin-left: 4px;
+}
+.play-icon {
+    height: 1em;
+    vertical-align: bottom;
+    margin:1px;
+    width: 1em
 }
 
 .title-header {
@@ -104,4 +162,12 @@ body {
     text-align: center;
     margin-top: 5%;
     margin-bottom: 1%;
+}
+
+a {
+    text-decoration: none;
+}
+
+.rec-title {
+    margin-left:12.5%
 }

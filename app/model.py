@@ -30,6 +30,7 @@ def update_similarities():
     features = gc.join(playlist_features)
     for column in features.columns:
         features[column] = features[column] / features[column].abs().max()
+    features = features.fillna(0)
 
     svd = TruncatedSVD(n_components=2)
     X_reduced = svd.fit_transform(features.values)

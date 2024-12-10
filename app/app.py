@@ -95,6 +95,15 @@ def playlist_genres(playlist_id):
         genres.append((genre_list))
     return flatten(genres)
 
+def model_playlists(playlist_id):
+    recs = model.get_recs(playlist_id=playlist_id)
+    model_playlists=[]
+    for playlist_name in recs:
+        playlist = Playlist.query.filter_by(name=playlist_name).first()
+        model_playlists.append(playlist)
+    sorted_playlists = sorted(model_playlists, key=lambda p: int(p.name.split()[0]), reverse=True)
+    return sorted_playlists
+
 @app.route('/')
 def index():
     playlists = Playlist.query.order_by(desc(cast(Playlist.name, db.Integer))).all()
@@ -109,7 +118,9 @@ def index():
 def playlist_details(playlist_id):
     playlist = Playlist.query.filter_by(playlist_id=playlist_id).first_or_404()
     playlist_tracks = Track.query.filter_by(playlist_id=playlist_id).all()
-    return render_template('playlist.html', playlist=playlist, playlist_tracks=playlist_tracks)
+    sorted_playlists = model_playlists(playlist_id)
+    print(model_playlists)
+    return render_template('playlist.html', playlist=playlist, playlist_tracks=playlist_tracks, model_playlists=sorted_playlists)
 
 @app.route('/artist/<string:artist_id>')
 def artist_playlists(artist_id):
@@ -126,16 +137,7 @@ def artist_playlists(artist_id):
     )
     return render_template('artist.html', artist_playlists=sorted_playlists, artist_name=artist_name)
 
-@app.route('/recommendations/<string:playlist_id>')
-def model_playlists(playlist_id):
-    recs = model.get_recs(playlist_id=playlist_id)
-    model_playlists=[]
-    for playlist_name in recs:
-        playlist = Playlist.query.filter_by(name=playlist_name).first()
-        model_playlists.append(playlist)
-    sorted_playlists = sorted(model_playlists, key=lambda p: int(p.name.split()[0]), reverse=True)
-
-    return render_template('model.html', model_playlists=sorted_playlists, playlist_name=db.session.query(Playlist.name).filter(Playlist.playlist_id == playlist_id).scalar())
+# @app.route('/recommendations/<string:playlist_id>')
 
 @app.route('/authorize')
 def authorize():
@@ -163,6 +165,7 @@ def callback():
         }
         response = requests.post(token_url, data=token_data)
         tokens = response.json()
+        print(tokens)
         access_token = tokens['access_token']
         refresh_token = tokens['refresh_token']
 
@@ -170,12 +173,14 @@ def callback():
         session['refresh_token'] = refresh_token
         session.modified = True
 
-        updated = update(1100)
+        print('got here')
+
+        updated = update()
 
         if updated:
             print('loaded dbs')
             return redirect(url_for('index'))
-        return redirect(url_for('/authorize'))       
+    return redirect(url_for('authorize'))       
 
 #refresh
 def refresh_access_token():
@@ -211,6 +216,7 @@ def batch(lst, n):
 def get_playlists(num_playlists, limit=50):
     access_token = refresh_access_token()
     if access_token:
+        print('yes access token')
         headers = {
             'Authorization': f'Bearer {access_token}',
         }
@@ -279,7 +285,6 @@ def get_tracks(playlist_id):
                     playlist_id=playlist_id,
                     artist_id=artist_id
                 )
-                print(track_name)
                 get_artists(artist_id)
                 db.session.add(new_track)
         db.session.commit()
@@ -288,9 +293,9 @@ def get_tracks(playlist_id):
 
 def get_audio_features(num_tracks):
     track_ids = db.session.query(Track.track_id).limit(-num_tracks).all()
-    print(track_ids)
     access_token = refresh_access_token()
     if access_token:
+        print('yes access token')
         headers = {
             'Authorization': f'Bearer {access_token}',
         }
@@ -348,8 +353,7 @@ def update():
     num_playlists = get_playlists(10, 10)
     get_audio_features(num_playlists)
     print('updated!', num_playlists)
-    if num_playlists:
-        return redirect(url_for('index'))
+    return True
 
 scheduler = BackgroundScheduler()
 scheduler.add_job(update, 'interval', days=1)
@@ -357,4 +361,5 @@ scheduler.start()
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
+    time.sleep(1)
 
